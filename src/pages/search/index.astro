@@ -21,8 +21,16 @@ const meta = {
       {
         integ.pagefind ? (
           <>
-            <p>Enter a search term or phrase to search the blog.</p>
+            <p class='text-muted-foreground mb-4'>Введи слово или фразу — найдём в базе знаний.</p>
             <PFSearch />
+            <div id='zero-results-hint' class='hidden mt-4 rounded-xl border border-dashed px-4 py-3 text-sm'>
+              <p class='text-muted-foreground'>По запросу <strong id='zero-results-query'></strong> ничего не найдено.</p>
+              <p class='mt-1'>Возможно, этого раздела ещё нет в базе знаний —
+                <a href='https://t.me/franch_sup_bot' target='_blank' rel='noopener noreferrer'
+                   class='font-medium hover:underline'>напиши в бот поддержки</a>,
+                мы добавим.
+              </p>
+            </div>
           </>
         ) : (
           <p>Pagefind is disabled.</p>
@@ -31,3 +39,41 @@ const meta = {
     </div>
   </main>
 </PageLayout>
+
+<script>
+  function initZeroResultsWatcher() {
+    const hint = document.getElementById('zero-results-hint')
+    const queryEl = document.getElementById('zero-results-query')
+    if (!hint || !queryEl) return
+
+    const showHint = (query: string) => {
+      queryEl.textContent = `«${query}»`
+      hint.classList.remove('hidden')
+    }
+    const hideHint = () => hint.classList.add('hidden')
+
+    const checkResults = () => {
+      const input = document.querySelector<HTMLInputElement>('.pagefind-ui__search-input')
+      const message = document.querySelector('.pagefind-ui__message')
+      if (!message || !input) return
+      const query = input.value.trim()
+      if (!query) { hideHint(); return }
+      const text = message.textContent ?? ''
+      const isZero = /\b0\b/.test(text) || text.toLowerCase().includes('no results')
+      isZero ? showHint(query) : hideHint()
+    }
+
+    // Watch DOM for Pagefind rendering results
+    const observer = new MutationObserver(checkResults)
+    const startObserving = () => {
+      const container = document.getElementById('site-search')
+      if (container) observer.observe(container, { childList: true, subtree: true })
+    }
+
+    // Pagefind loads lazily — wait for it
+    if (document.readyState === 'complete') startObserving()
+    else window.addEventListener('load', startObserving)
+  }
+
+  initZeroResultsWatcher()
+</script>
