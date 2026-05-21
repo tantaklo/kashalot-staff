@@ -1,0 +1,114 @@
+---
+import { Button, Icon } from 'astro-pure/user'
+import PageLayout from '@/layouts/BaseLayout.astro'
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+
+const sections = [
+  {
+    title: 'С чего начать',
+    description: 'Роль, правила, первый день',
+    href: `${base}/docs/start/index`,
+    icon: '📋'
+  },
+  {
+    title: 'Подготовка смены',
+    description: 'Зарядка АКБ, техпомещение, что взять с собой',
+    href: `${base}/docs/daily/preparation`,
+    icon: '🔋'
+  },
+  {
+    title: 'Замена АКБ',
+    description: 'Пошагово за 30 секунд',
+    href: `${base}/docs/daily/battery-swap`,
+    icon: '⚡'
+  },
+  {
+    title: 'Ежедневные проверки',
+    description: 'Чеклист на каждую смену',
+    href: `${base}/docs/daily/daily-checks`,
+    icon: '✅'
+  },
+  {
+    title: 'Снегокат не едет',
+    description: 'Диагностика — от простого к сложному',
+    href: `${base}/docs/troubleshooting/not-moving`,
+    icon: '🔧'
+  },
+  {
+    title: 'АКБ: правила',
+    description: 'Зарядка, хранение, безопасность',
+    href: `${base}/docs/battery/rules`,
+    icon: '🛡️'
+  },
+  {
+    title: 'Погода и покрытие',
+    description: 'Снег, оттепель, лёд, слякоть',
+    href: `${base}/docs/weather/conditions`,
+    icon: '🌨️'
+  },
+  {
+    title: 'Еженедельные проверки',
+    description: 'Салазки, зона, отчёт',
+    href: `${base}/docs/weekly/checks`,
+    icon: '📅'
+  },
+  {
+    title: 'Видеоинструкции',
+    description: 'Смотреть перед первой сменой',
+    href: `${base}/docs/videos/index`,
+    icon: '🎬'
+  },
+  {
+    title: 'Поддержка',
+    description: 'Куда писать, если что-то пошло не так',
+    href: `${base}/docs/support/contacts`,
+    icon: '💬'
+  }
+]
+---
+
+<PageLayout meta={{ title: 'База знаний сотрудника' }}>
+  <main class='flex w-full flex-col items-center'>
+    <section class='animate mb-10 flex flex-col items-center gap-y-5 text-center' id='content-header'>
+      <div class='text-5xl'>🐋</div>
+      <h1 class='text-3xl font-medium'>Кашалот — база знаний</h1>
+      <p class='text-muted-foreground max-w-md'>
+        Операционный справочник для сотрудников. Изучи всё перед первой сменой —
+        и возвращайся, когда что-то нужно уточнить прямо на точке.
+      </p>
+      <div class='flex items-center gap-x-2 rounded-full border bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800 px-4 py-2 text-sm text-amber-800 dark:text-amber-200'>
+        <span>⚡</span>
+        <span>Главное правило: АКБ 40–50% → меняем сразу</span>
+      </div>
+    </section>
+
+    <div id='content' class='animate w-full md:w-4/5 lg:w-5/6'>
+      <div class='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+        {sections.map((section) => (
+          <a
+            href={section.href}
+            class='flex items-start gap-x-4 rounded-2xl border bg-card p-4 text-card-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/50'
+          >
+            <span class='text-2xl mt-0.5'>{section.icon}</span>
+            <div>
+              <div class='font-medium'>{section.title}</div>
+              <div class='text-sm text-muted-foreground mt-0.5'>{section.description}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class='mt-8 flex justify-center'>
+        <a
+          href='https://t.me/franch_sup_bot'
+          target='_blank'
+          class='flex items-center gap-x-2 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-muted'
+        >
+          <span>💬</span>
+          Бот техподдержки
+        </a>
+      </div>
+    </div>
+  </main>
+</PageLayout>
