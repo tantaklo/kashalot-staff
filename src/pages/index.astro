@@ -129,10 +129,12 @@ const sections = [
     }).catch(() => {})
 
     // Google Таблица — архив для аналитики
+    // Используем text/plain + no-cors, иначе браузер блокирует preflight
     if (SHEETS_WH) {
       fetch(SHEETS_WH, {
         method : 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        mode   : 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
         body   : JSON.stringify({
           query,
           found,
