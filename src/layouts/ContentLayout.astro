@@ -153,3 +153,99 @@ const { meta, highlightColor, back = '/', ...props } = Astro.props
     }
   }
 </style>
+
+{/* ── Error-reporting tooltip ───────────────────────────── */}
+<div
+  id='err-tooltip'
+  class='fixed z-[200] hidden cursor-pointer select-none rounded-lg border bg-card px-3 py-1.5 text-sm font-medium shadow-md transition-colors hover:bg-muted'
+>
+  🚩 Сообщить об ошибке
+</div>
+
+<script>
+  const TG_TOKEN  = import.meta.env.PUBLIC_TG_BOT_TOKEN  || ''
+  const TG_CHAT   = import.meta.env.PUBLIC_TG_CHAT_ID    || ''
+  const tip       = document.getElementById('err-tooltip') as HTMLElement | null
+
+  if (tip && TG_TOKEN && TG_CHAT) {
+    let hideTimer: ReturnType<typeof setTimeout>
+    let savedText = ''
+
+    const escape = (s: string) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+    function show(cx: number, cy: number) {
+      tip!.classList.remove('hidden')
+      tip!.style.left = `${cx - 10}px`
+      tip!.style.top  = `${cy + 16}px`
+      // keep inside viewport
+      requestAnimationFrame(() => {
+        const r = tip!.getBoundingClientRect()
+        if (r.right  > window.innerWidth  - 8) tip!.style.left = `${window.innerWidth  - r.width  - 8}px`
+        if (r.bottom > window.innerHeight - 8) tip!.style.top  = `${cy - r.height - 8}px`
+      })
+    }
+
+    function hide() {
+      if (!tip) return
+      tip.classList.add('hidden')
+      tip.textContent = '🚩 Сообщить об ошибке'
+    }
+
+    document.addEventListener('mouseup', (e) => {
+      clearTimeout(hideTimer)
+      const sel  = window.getSelection()
+      const text = sel?.toString().trim() ?? ''
+
+      if (text.length < 3) { hideTimer = setTimeout(hide, 200); return }
+
+      const content = document.getElementById('content')
+      if (!content || !sel?.rangeCount) { hideTimer = setTimeout(hide, 200); return }
+
+      const range = sel.getRangeAt(0)
+      if (!content.contains(range.commonAncestorContainer)) { hideTimer = setTimeout(hide, 200); return }
+
+      savedText = text
+      show(e.clientX, e.clientY)
+    })
+
+    // prevent click from clearing the selection
+    tip.addEventListener('mousedown', (e) => { e.preventDefault(); clearTimeout(hideTimer) })
+
+    tip.addEventListener('click', async () => {
+      if (!savedText) { hide(); return }
+
+      const title  = document.title
+      const url    = window.location.href
+      const msg    = `🚩 <b>Ошибка в базе знаний</b>\n\n` +
+                     `📄 <b>Страница:</b> ${escape(title)}\n` +
+                     `🔗 ${escape(url)}\n\n` +
+                     `❌ <b>Выделенный текст:</b>\n<i>${escape(savedText.slice(0, 500))}</i>`
+
+      tip!.textContent = '⏳ Отправляю…'
+
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+          method : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body   : JSON.stringify({ chat_id: TG_CHAT, text: msg, parse_mode: 'HTML' })
+        })
+        if (res.ok) {
+          tip!.textContent = '✅ Отправлено!'
+          window.getSelection()?.removeAllRanges()
+          setTimeout(hide, 1500)
+        } else {
+          tip!.textContent = '❌ Ошибка — попробуй ещё'
+          setTimeout(hide, 2500)
+        }
+      } catch {
+        tip!.textContent = '❌ Нет соединения'
+        setTimeout(hide, 2500)
+      }
+    })
+
+    document.addEventListener('mousedown', (e) => {
+      if (e.target !== tip) { clearTimeout(hideTimer); hideTimer = setTimeout(hide, 150) }
+    })
+  }
+</script>

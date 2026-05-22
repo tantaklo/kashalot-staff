@@ -37,6 +37,9 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          PUBLIC_TG_BOT_TOKEN: ${{ secrets.PUBLIC_TG_BOT_TOKEN }}
+          PUBLIC_TG_CHAT_ID: ${{ secrets.PUBLIC_TG_CHAT_ID }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
