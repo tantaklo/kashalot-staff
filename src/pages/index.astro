@@ -4,71 +4,22 @@ import PageLayout from '@/layouts/BaseLayout.astro'
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
 const sections = [
-  {
-    title: 'С чего начать',
-    description: 'Роль, правила, первый день',
-    href: `${base}/docs/start/index`,
-    icon: '📋'
-  },
-  {
-    title: 'Подготовка смены',
-    description: 'Зарядка АКБ, техпомещение, что взять с собой',
-    href: `${base}/docs/daily/preparation`,
-    icon: '🔋'
-  },
-  {
-    title: 'Замена АКБ',
-    description: 'Пошагово за 30 секунд',
-    href: `${base}/docs/daily/battery-swap`,
-    icon: '⚡'
-  },
-  {
-    title: 'Ежедневные проверки',
-    description: 'Чеклист на каждую смену',
-    href: `${base}/docs/daily/daily-checks`,
-    icon: '✅'
-  },
-  {
-    title: 'Снегокат не едет',
-    description: 'Диагностика — от простого к сложному',
-    href: `${base}/docs/troubleshooting/not-moving`,
-    icon: '🔧'
-  },
-  {
-    title: 'АКБ: правила',
-    description: 'Зарядка, хранение, безопасность',
-    href: `${base}/docs/battery/rules`,
-    icon: '🛡️'
-  },
-  {
-    title: 'Погода и покрытие',
-    description: 'Снег, оттепель, лёд, слякоть',
-    href: `${base}/docs/weather/conditions`,
-    icon: '🌨️'
-  },
-  {
-    title: 'Еженедельные проверки',
-    description: 'Салазки, зона, отчёт',
-    href: `${base}/docs/weekly/checks`,
-    icon: '📅'
-  },
-  {
-    title: 'Видеоинструкции',
-    description: 'Смотреть перед первой сменой',
-    href: `${base}/docs/videos/index`,
-    icon: '🎬'
-  },
-  {
-    title: 'Поддержка',
-    description: 'Куда писать, если что-то пошло не так',
-    href: `${base}/docs/support/contacts`,
-    icon: '💬'
-  }
+  { title: 'С чего начать',        description: 'Роль, правила, первый день',             href: `${base}/docs/start/index`,                icon: '📋' },
+  { title: 'Подготовка смены',     description: 'Зарядка АКБ, техпомещение, что взять',   href: `${base}/docs/daily/preparation`,          icon: '🔋' },
+  { title: 'Замена АКБ',           description: 'Пошагово за 30 секунд',                  href: `${base}/docs/daily/battery-swap`,         icon: '⚡' },
+  { title: 'Ежедневные проверки',  description: 'Чеклист на каждую смену',                href: `${base}/docs/daily/daily-checks`,         icon: '✅' },
+  { title: 'Снегокат не едет',     description: 'Диагностика — от простого к сложному',   href: `${base}/docs/troubleshooting/not-moving`, icon: '🔧' },
+  { title: 'АКБ: правила',         description: 'Зарядка, хранение, безопасность',        href: `${base}/docs/battery/rules`,              icon: '🛡️' },
+  { title: 'Погода и покрытие',    description: 'Снег, оттепель, лёд, слякоть',           href: `${base}/docs/weather/conditions`,         icon: '🌨️' },
+  { title: 'Еженедельные проверки',description: 'Салазки, зона, отчёт',                   href: `${base}/docs/weekly/checks`,              icon: '📅' },
+  { title: 'Видеоинструкции',      description: 'Смотреть перед первой сменой',           href: `${base}/docs/videos/index`,               icon: '🎬' },
+  { title: 'Поддержка',            description: 'Куда писать, если что-то пошло не так',  href: `${base}/docs/support/contacts`,           icon: '💬' },
 ]
 ---
 
 <PageLayout meta={{ title: 'База знаний сотрудника' }}>
   <main class='flex w-full flex-col items-center'>
+
     <section class='animate mb-8 flex flex-col items-center gap-y-5 text-center' id='content-header'>
       <div class='text-5xl'>🐋</div>
       <h1 class='text-3xl font-medium'>Кашалот — база знаний</h1>
@@ -84,40 +35,48 @@ const sections = [
 
     <div id='content' class='animate w-full md:w-4/5 lg:w-5/6'>
 
-      {/* Inline search */}
-      <div id='home-search-wrap' class='mb-6'>
-        <div id='home-search'></div>
-        <div id='home-search-empty' class='hidden mt-3 rounded-xl border border-dashed px-4 py-3 text-sm'>
-          <p class='text-muted-foreground'>Ничего не найдено — возможно, этого раздела ещё нет.</p>
-          <a href='https://t.me/franch_sup_bot' target='_blank' rel='noopener noreferrer'
-             class='mt-1 inline-flex font-medium hover:underline'>💬 Написать в бот поддержки</a>
-        </div>
+      <!-- Поиск -->
+      <div class='relative mb-6'>
+        <svg class='pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2'>
+          <circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/>
+        </svg>
+        <input
+          id='search-input'
+          type='search'
+          autocomplete='off'
+          placeholder='Найти инструкцию… например «замена АКБ»'
+          class='w-full rounded-xl border bg-muted py-3 pl-10 pr-4 text-sm outline-none ring-0 transition-colors focus:border-primary'
+        />
       </div>
 
-      {/* Section cards */}
-      <div id='sections-grid' class='grid grid-cols-1 gap-3 sm:grid-cols-2 transition-all'>
-        {sections.map((section) => (
-          <a
-            href={section.href}
-            class='flex items-start gap-x-4 rounded-2xl border bg-card p-4 text-card-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/50'
-          >
-            <span class='text-2xl mt-0.5'>{section.icon}</span>
+      <!-- Результаты поиска -->
+      <div id='search-results' class='hidden mb-6 flex flex-col gap-2'></div>
+
+      <!-- Нет результатов -->
+      <div id='search-empty' class='hidden mb-6 rounded-xl border border-dashed px-4 py-3 text-sm'>
+        <p class='text-muted-foreground'>Ничего не найдено — возможно, этого раздела ещё нет в базе знаний.</p>
+        <a href='https://t.me/franch_sup_bot' target='_blank' rel='noopener noreferrer'
+           class='mt-1 inline-flex font-medium hover:underline'>💬 Написать в бот поддержки</a>
+      </div>
+
+      <!-- Карточки разделов -->
+      <div id='sections-grid' class='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+        {sections.map((s) => (
+          <a href={s.href}
+             class='flex items-start gap-x-4 rounded-2xl border bg-card p-4 text-card-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/50'>
+            <span class='text-2xl mt-0.5'>{s.icon}</span>
             <div>
-              <div class='font-medium'>{section.title}</div>
-              <div class='text-sm text-muted-foreground mt-0.5'>{section.description}</div>
+              <div class='font-medium'>{s.title}</div>
+              <div class='text-sm text-muted-foreground mt-0.5'>{s.description}</div>
             </div>
           </a>
         ))}
       </div>
 
       <div class='mt-8 flex justify-center'>
-        <a
-          href='https://t.me/franch_sup_bot'
-          target='_blank'
-          class='flex items-center gap-x-2 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-muted'
-        >
-          <span>💬</span>
-          Бот техподдержки
+        <a href='https://t.me/franch_sup_bot' target='_blank'
+           class='flex items-center gap-x-2 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-muted'>
+          <span>💬</span> Бот техподдержки
         </a>
       </div>
     </div>
@@ -125,67 +84,52 @@ const sections = [
 </PageLayout>
 
 <script>
-  const onIdle = window.requestIdleCallback || ((cb: () => void) => setTimeout(cb, 1))
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 
-  window.addEventListener('DOMContentLoaded', () => {
-    onIdle(async () => {
-      // @ts-expect-error — no types for pagefind ui
-      const { PagefindUI } = await import('@pagefind/default-ui')
+  const input   = document.getElementById('search-input')   as HTMLInputElement
+  const results = document.getElementById('search-results') as HTMLElement
+  const empty   = document.getElementById('search-empty')   as HTMLElement
+  const grid    = document.getElementById('sections-grid')  as HTMLElement
 
-      const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+  let pagefind: any = null
+  let debounceTimer: ReturnType<typeof setTimeout>
 
-      new PagefindUI({
-        element: '#home-search',
-        baseUrl: import.meta.env.BASE_URL,
-        bundlePath: `${base}/pagefind/`,
-        showImages: false,
-        showSubResults: false,
-        resetStyles: false,
-        translations: {
-          placeholder: 'Найти инструкцию… «замена АКБ», «не едет»',
-          zero_results: 'Ничего не найдено'
-        },
-        processResult: (result: { url: string }) => {
-          result.url = result.url.replace(/\/$/, '')
-          return result
-        }
-      })
+  async function getPF() {
+    if (pagefind) return pagefind
+    pagefind = await import(`${base}/pagefind/pagefind.js`)
+    await pagefind.options({ excerptLength: 20 })
+    return pagefind
+  }
 
-      const input = document.querySelector<HTMLInputElement>('#home-search .pagefind-ui__search-input')
-      const grid = document.getElementById('sections-grid')
-      const emptyMsg = document.getElementById('home-search-empty')
-      if (!input || !grid || !emptyMsg) return
+  function setMode(mode: 'idle' | 'results' | 'empty') {
+    grid.style.display    = mode === 'idle' ? '' : 'none'
+    results.classList.toggle('hidden', mode !== 'results')
+    empty.classList.toggle('hidden',   mode !== 'empty')
+  }
 
-      const observer = new MutationObserver(() => {
-        const query = input.value.trim()
-        const hasResults = !!document.querySelector('#home-search .pagefind-ui__result')
-        const isZero = !!query && !hasResults
+  async function runSearch(query: string) {
+    if (!query) { setMode('idle'); return }
 
-        grid.style.display = query ? 'none' : ''
-        emptyMsg.classList.toggle('hidden', !isZero)
-      })
+    const pf = await getPF()
+    const { results: hits } = await pf.search(query)
 
-      observer.observe(document.getElementById('home-search')!, {
-        childList: true,
-        subtree: true
-      })
-    })
+    if (!hits.length) { setMode('empty'); return }
+
+    const data = await Promise.all(hits.slice(0, 6).map((h: any) => h.data()))
+
+    results.innerHTML = data.map((d: any) => `
+      <a href="${d.url.replace(/\/$/, '')}"
+         class="flex flex-col gap-y-0.5 rounded-xl border bg-card px-4 py-3 transition-all hover:shadow-md hover:border-primary/50">
+        <span class="font-medium text-sm">${d.meta?.title ?? 'Без названия'}</span>
+        <span class="text-xs text-muted-foreground line-clamp-2">${d.excerpt}</span>
+      </a>
+    `).join('')
+
+    setMode('results')
+  }
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer)
+    debounceTimer = setTimeout(() => runSearch(input.value.trim()), 200)
   })
 </script>
-
-<style>
-  /* Подгоняем стиль Pagefind под дизайн главной */
-  #home-search {
-    --pagefind-ui-scale: 0.85;
-    --pagefind-ui-primary: hsl(var(--primary));
-    --pagefind-ui-text: hsl(var(--foreground));
-    --pagefind-ui-background: hsl(var(--muted));
-    --pagefind-ui-border: hsl(var(--border));
-    --pagefind-ui-border-width: 1px;
-    --pagefind-ui-border-radius: 0.75rem;
-    --pagefind-ui-font: inherit;
-  }
-  #home-search .pagefind-ui__form::before {
-    display: none; /* убираем встроенную иконку лупы — есть placeholder */
-  }
-</style>
