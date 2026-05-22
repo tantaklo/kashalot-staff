@@ -1,5 +1,4 @@
 ---
-import { Button, Icon } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
@@ -70,7 +69,7 @@ const sections = [
 
 <PageLayout meta={{ title: 'База знаний сотрудника' }}>
   <main class='flex w-full flex-col items-center'>
-    <section class='animate mb-10 flex flex-col items-center gap-y-5 text-center' id='content-header'>
+    <section class='animate mb-8 flex flex-col items-center gap-y-5 text-center' id='content-header'>
       <div class='text-5xl'>🐋</div>
       <h1 class='text-3xl font-medium'>Кашалот — база знаний</h1>
       <p class='text-muted-foreground max-w-md'>
@@ -84,7 +83,19 @@ const sections = [
     </section>
 
     <div id='content' class='animate w-full md:w-4/5 lg:w-5/6'>
-      <div class='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+
+      {/* Inline search */}
+      <div id='home-search-wrap' class='mb-6'>
+        <div id='home-search'></div>
+        <div id='home-search-empty' class='hidden mt-3 rounded-xl border border-dashed px-4 py-3 text-sm'>
+          <p class='text-muted-foreground'>Ничего не найдено — возможно, этого раздела ещё нет.</p>
+          <a href='https://t.me/franch_sup_bot' target='_blank' rel='noopener noreferrer'
+             class='mt-1 inline-flex font-medium hover:underline'>💬 Написать в бот поддержки</a>
+        </div>
+      </div>
+
+      {/* Section cards */}
+      <div id='sections-grid' class='grid grid-cols-1 gap-3 sm:grid-cols-2 transition-all'>
         {sections.map((section) => (
           <a
             href={section.href}
@@ -112,3 +123,69 @@ const sections = [
     </div>
   </main>
 </PageLayout>
+
+<script>
+  const onIdle = window.requestIdleCallback || ((cb: () => void) => setTimeout(cb, 1))
+
+  window.addEventListener('DOMContentLoaded', () => {
+    onIdle(async () => {
+      // @ts-expect-error — no types for pagefind ui
+      const { PagefindUI } = await import('@pagefind/default-ui')
+
+      const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+
+      new PagefindUI({
+        element: '#home-search',
+        baseUrl: import.meta.env.BASE_URL,
+        bundlePath: `${base}/pagefind/`,
+        showImages: false,
+        showSubResults: false,
+        resetStyles: false,
+        translations: {
+          placeholder: 'Найти инструкцию… «замена АКБ», «не едет»',
+          zero_results: 'Ничего не найдено'
+        },
+        processResult: (result: { url: string }) => {
+          result.url = result.url.replace(/\/$/, '')
+          return result
+        }
+      })
+
+      const input = document.querySelector<HTMLInputElement>('#home-search .pagefind-ui__search-input')
+      const grid = document.getElementById('sections-grid')
+      const emptyMsg = document.getElementById('home-search-empty')
+      if (!input || !grid || !emptyMsg) return
+
+      const observer = new MutationObserver(() => {
+        const query = input.value.trim()
+        const hasResults = !!document.querySelector('#home-search .pagefind-ui__result')
+        const isZero = !!query && !hasResults
+
+        grid.style.display = query ? 'none' : ''
+        emptyMsg.classList.toggle('hidden', !isZero)
+      })
+
+      observer.observe(document.getElementById('home-search')!, {
+        childList: true,
+        subtree: true
+      })
+    })
+  })
+</script>
+
+<style>
+  /* Подгоняем стиль Pagefind под дизайн главной */
+  #home-search {
+    --pagefind-ui-scale: 0.85;
+    --pagefind-ui-primary: hsl(var(--primary));
+    --pagefind-ui-text: hsl(var(--foreground));
+    --pagefind-ui-background: hsl(var(--muted));
+    --pagefind-ui-border: hsl(var(--border));
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 0.75rem;
+    --pagefind-ui-font: inherit;
+  }
+  #home-search .pagefind-ui__form::before {
+    display: none; /* убираем встроенную иконку лупы — есть placeholder */
+  }
+</style>
