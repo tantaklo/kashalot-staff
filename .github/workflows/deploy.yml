@@ -40,6 +40,7 @@ jobs:
         env:
           PUBLIC_TG_BOT_TOKEN: ${{ secrets.PUBLIC_TG_BOT_TOKEN }}
           PUBLIC_TG_CHAT_ID: ${{ secrets.PUBLIC_TG_CHAT_ID }}
+          PUBLIC_SHEETS_WEBHOOK: ${{ secrets.PUBLIC_SHEETS_WEBHOOK }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
