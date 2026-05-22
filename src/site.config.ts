@@ -47,9 +47,7 @@ export const theme: ThemeUserConfig = {
 
   /** Configure the header of your site. */
   header: {
-    menu: [
-      { title: 'Инструкции', link: '/docs' }
-    ]
+    menu: []
   },
 
   /** Configure the footer of your site. */

@@ -84,7 +84,9 @@ const sections = [
 </PageLayout>
 
 <script>
-  const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+  const base      = import.meta.env.BASE_URL.replace(/\/$/, '')
+  const TG_TOKEN  = import.meta.env.PUBLIC_TG_BOT_TOKEN || ''
+  const TG_CHAT   = import.meta.env.PUBLIC_TG_CHAT_ID   || ''
 
   const input   = document.getElementById('search-input')   as HTMLInputElement
   const results = document.getElementById('search-results') as HTMLElement
@@ -93,6 +95,8 @@ const sections = [
 
   let pagefind: any = null
   let debounceTimer: ReturnType<typeof setTimeout>
+  let tgTimer:      ReturnType<typeof setTimeout>
+  let lastSent = ''
 
   async function getPF() {
     if (pagefind) return pagefind
@@ -107,13 +111,35 @@ const sections = [
     empty.classList.toggle('hidden',   mode !== 'empty')
   }
 
+  function sendToTg(query: string, found: number) {
+    if (!TG_TOKEN || !TG_CHAT) return
+    if (query === lastSent) return   // не дублировать
+    lastSent = query
+
+    const icon = found > 0 ? '🔍' : '❓'
+    const status = found > 0 ? `Найдено: ${found}` : 'Ничего не найдено'
+    const msg = `${icon} <b>Поисковый запрос</b>\n«${query}»\n${status}`
+
+    fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({ chat_id: TG_CHAT, text: msg, parse_mode: 'HTML' })
+    }).catch(() => {/* тихо игнорируем ошибки сети */})
+  }
+
   async function runSearch(query: string) {
-    if (!query) { setMode('idle'); return }
+    if (!query) { setMode('idle'); lastSent = ''; return }
 
     const pf = await getPF()
     const { results: hits } = await pf.search(query)
 
-    if (!hits.length) { setMode('empty'); return }
+    if (!hits.length) {
+      setMode('empty')
+      // Запросы без результатов — отправляем сразу (это и есть «дырки» в базе)
+      clearTimeout(tgTimer)
+      tgTimer = setTimeout(() => sendToTg(query, 0), 1500)
+      return
+    }
 
     const data = await Promise.all(hits.slice(0, 6).map((h: any) => h.data()))
 
@@ -126,10 +152,16 @@ const sections = [
     `).join('')
 
     setMode('results')
+
+    // Успешные запросы — отправляем после 4 сек паузы (человек нашёл что искал)
+    clearTimeout(tgTimer)
+    tgTimer = setTimeout(() => sendToTg(query, hits.length), 4000)
   }
 
   input.addEventListener('input', () => {
     clearTimeout(debounceTimer)
+    clearTimeout(tgTimer)
+    lastSent = ''
     debounceTimer = setTimeout(() => runSearch(input.value.trim()), 200)
   })
 </script>

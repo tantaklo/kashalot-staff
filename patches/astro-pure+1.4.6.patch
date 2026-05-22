@@ -1,8 +1,8 @@
 diff --git a/node_modules/astro-pure/components/basic/Header.astro b/node_modules/astro-pure/components/basic/Header.astro
-index 3101092..8cd4a7b 100644
+index 3101092..b131498 100644
 --- a/node_modules/astro-pure/components/basic/Header.astro
 +++ b/node_modules/astro-pure/components/basic/Header.astro
-@@ -10,7 +10,7 @@ import { Icon } from '../user'
+@@ -10,38 +10,11 @@ import { Icon } from '../user'
    <a
      class='z-30 text-xl font-medium group-[.not-top]:ms-2 sm:group-[.not-top]:ms-3'
      style='transition:margin-inline 0.3s'
@@ -11,32 +11,51 @@ index 3101092..8cd4a7b 100644
      aria-label='Brand'>{config.title}</a
    >
  
-@@ -24,7 +24,7 @@ import { Icon } from '../user'
-         {
-           config.header.menu.map((item) => (
-             <a
+   <div class='flex items-center gap-x-2'>
+-    {/* Menu links */}
+-    <div
+-      id='headerExpandContent'
+-      class='end-0 start-0 top-12 grid border border-transparent group-[.not-top]:rounded-xl group-[.expanded]:opacity-100 dark:group-[.expanded.not-top]:bg-muted max-sm:absolute max-sm:opacity-0 max-sm:group-[.not-top]:border-border max-sm:group-[.expanded.not-top]:bg-background max-sm:group-[.not-top]:px-4 max-sm:group-[.not-top]:py-2 sm:grid-rows-1'
+-    >
+-      <div class='flex flex-col items-center justify-center overflow-hidden sm:flex-row'>
+-        {
+-          config.header.menu.map((item) => (
+-            <a
 -              href={item.link}
-+              href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}${item.link}`}
-               class='w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3'
-               aria-label='Nav menu item'
-               data-astro-prefetch
-@@ -34,9 +34,13 @@ import { Icon } from '../user'
-           ))
-         }
-         <div class='flex w-full grow flex-row justify-end gap-x-3 sm:w-fit sm:gap-x-5'>
+-              class='w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3'
+-              aria-label='Nav menu item'
+-              data-astro-prefetch
+-            >
+-              {item.title}
+-            </a>
+-          ))
+-        }
+-        <div class='flex w-full grow flex-row justify-end gap-x-3 sm:w-fit sm:gap-x-5'>
 -          <a class='px-1 py-2 transition-none sm:px-2' href='/search' title='Search'>
 -            <span class='sr-only'>Search</span>
 -            <Icon name='search' class='size-5' />
-+          <a
-+            class='flex items-center gap-x-1.5 rounded-lg border px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary'
-+            href={`${import.meta.env.BASE_URL}/search`}
-+            title='Поиск'
-+          >
-+            <Icon name='search' class='size-4 shrink-0' />
-+            <span class='hidden sm:inline'>Поиск</span>
-           </a>
-         </div>
-       </div>
+-          </a>
+-        </div>
+-      </div>
+-    </div>
+-
+     {/* buttons */}
+     <div class='z-30 flex gap-x-4 group-[.not-top]:gap-x-2' style='transition:gap 0.3s'>
+       <button
+@@ -53,13 +26,6 @@ import { Icon } from '../user'
+         <Icon class='light hidden size-5 group-hover/dark:text-primary' name='sun' />
+         <Icon class='dark hidden size-5 group-hover/dark:text-primary' name='moon' />
+       </button>
+-      <button
+-        id='toggleMenu'
+-        class='rounded-md border p-1.5 transition-colors hover:bg-border sm:hidden sm:group-[.not-top]:rounded-xl'
+-      >
+-        <span class='sr-only'>Menu</span>
+-        <Icon class='size-5' name='menu' />
+-      </button>
+     </div>
+   </div>
+ </header-component>
 diff --git a/node_modules/astro-pure/components/pages/PFSearch.astro b/node_modules/astro-pure/components/pages/PFSearch.astro
 index aac2a62..29855bc 100644
 --- a/node_modules/astro-pure/components/pages/PFSearch.astro
