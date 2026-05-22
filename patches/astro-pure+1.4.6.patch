@@ -1,0 +1,54 @@
+diff --git a/node_modules/astro-pure/components/basic/Header.astro b/node_modules/astro-pure/components/basic/Header.astro
+index 3101092..8cd4a7b 100644
+--- a/node_modules/astro-pure/components/basic/Header.astro
++++ b/node_modules/astro-pure/components/basic/Header.astro
+@@ -10,7 +10,7 @@ import { Icon } from '../user'
+   <a
+     class='z-30 text-xl font-medium group-[.not-top]:ms-2 sm:group-[.not-top]:ms-3'
+     style='transition:margin-inline 0.3s'
+-    href='/'
++    href={import.meta.env.BASE_URL}
+     aria-label='Brand'>{config.title}</a
+   >
+ 
+@@ -24,7 +24,7 @@ import { Icon } from '../user'
+         {
+           config.header.menu.map((item) => (
+             <a
+-              href={item.link}
++              href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}${item.link}`}
+               class='w-full flex-none grow py-2 text-right font-medium transition-none hover:text-primary sm:w-fit sm:px-3'
+               aria-label='Nav menu item'
+               data-astro-prefetch
+@@ -34,9 +34,13 @@ import { Icon } from '../user'
+           ))
+         }
+         <div class='flex w-full grow flex-row justify-end gap-x-3 sm:w-fit sm:gap-x-5'>
+-          <a class='px-1 py-2 transition-none sm:px-2' href='/search' title='Search'>
+-            <span class='sr-only'>Search</span>
+-            <Icon name='search' class='size-5' />
++          <a
++            class='flex items-center gap-x-1.5 rounded-lg border px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-primary'
++            href={`${import.meta.env.BASE_URL}/search`}
++            title='Поиск'
++          >
++            <Icon name='search' class='size-4 shrink-0' />
++            <span class='hidden sm:inline'>Поиск</span>
+           </a>
+         </div>
+       </div>
+diff --git a/node_modules/astro-pure/components/pages/PFSearch.astro b/node_modules/astro-pure/components/pages/PFSearch.astro
+index aac2a62..29855bc 100644
+--- a/node_modules/astro-pure/components/pages/PFSearch.astro
++++ b/node_modules/astro-pure/components/pages/PFSearch.astro
+@@ -37,6 +37,10 @@ import '@pagefind/default-ui/css/ui.css'
+             bundlePath: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/pagefind/`,
+             showImages: false,
+             showSubResults: true,
++            translations: {
++              placeholder: 'Например: «замена АКБ» или «снегокат не едет»',
++              zero_results: 'Ничего не найдено по запросу [SEARCH_TERM]'
++            },
+             processResult: (result: { url: string; sub_results: Array<{ url: string }> }) => {
+               result.url = formatURL(result.url)
+               result.sub_results = result.sub_results.map((sub_result) => {
