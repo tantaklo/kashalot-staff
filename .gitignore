@@ -39,3 +39,10 @@ ignore.*
 bunfig.toml
 /src/content/blog/test.*
 /test/
+
+### Security ###
+credentials.md
+credentials.local.md
+secrets/
+*.key
+*.pem
